@@ -1,149 +1,212 @@
-import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-
-const AINamedMyPet = () => {
-  const [petType, setPetType] = useState('Dog');
-  const [appearance, setAppearance] = useState('');
-  const [personality, setPersonality] = useState('Playful');
-  const [mediaInspiration, setMediaInspiration] = useState('');
-  const [nameOrigin, setNameOrigin] = useState('No preference');
-  const [generatedNames, setGeneratedNames] = useState([]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // 在这里我们会模拟AI生成名字的过程
-    const mockNames = [
-      { name: 'Buddy', explanation: 'A friendly name for a playful dog.' },
-      { name: 'Luna', explanation: 'Inspired by the moon, perfect for a mysterious pet.' },
-      { name: 'Orion', explanation: 'A strong name from Greek mythology, suitable for an energetic pet.' },
-    ];
-    setGeneratedNames(mockNames);
-  };
-
-  return (
-    <div className="min-h-screen bg-purple-700 p-4 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-white mb-8">AI Named My Pet ✨</h1>
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
-        <p className="text-gray-600 mb-6">
-          Get whisked away by AI Named My Pet, the ingenious AI wizard that bestows
-          tailor-made, endearing names reflecting your pet's extraordinary essence.
-        </p>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              What type of pet are you naming?
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yandex图片搜索</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin: 2rem;
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        #uploadForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #imageInput {
+            display: none;
+        }
+        .custom-file-upload {
+            border: 1px solid #ccc;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            color: #495057;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .custom-file-upload:hover {
+            background-color: #e9ecef;
+        }
+        #searchButton {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #searchButton:hover {
+            background-color: #0056b3;
+        }
+        #searchButton:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        #previewContainer {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 4px;
+            display: none;
+        }
+        #results {
+            margin-top: 2rem;
+        }
+        #results ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #results li {
+            margin-bottom: 0.5rem;
+        }
+        #results a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        #results a:hover {
+            text-decoration: underline;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Yandex图片搜索</h1>
+        <form id="uploadForm">
+            <label for="imageInput" class="custom-file-upload">
+                选择图片
             </label>
-            <div className="relative">
-              <select
-                value={petType}
-                onChange={(e) => setPetType(e.target.value)}
-                className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              >
-                <option>Dog</option>
-                <option>Cat</option>
-                <option>Bird</option>
-                <option>Other</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <ChevronDown size={20} />
-              </div>
+            <input type="file" id="imageInput" accept="image/*">
+            <div id="previewContainer">
+                <img id="imagePreview" alt="图片预览">
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Describe your pet's appearance or any distinctive features? (optional)
-            </label>
-            <textarea
-              value={appearance}
-              onChange={(e) => setAppearance(e.target.value)}
-              className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-              rows="3"
-              placeholder="e.g. Big and fluffy!"
-            ></textarea>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              What is your pet's main personality or temperament?
-            </label>
-            <div className="relative">
-              <select
-                value={personality}
-                onChange={(e) => setPersonality(e.target.value)}
-                className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              >
-                <option>Playful</option>
-                <option>Calm</option>
-                <option>Energetic</option>
-                <option>Shy</option>
-                <option>Friendly</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <ChevronDown size={20} />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Any favorite tv shows, movies, books, or other media that you would like to draw inspiration from?
-            </label>
-            <textarea
-              value={mediaInspiration}
-              onChange={(e) => setMediaInspiration(e.target.value)}
-              className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-              rows="3"
-              placeholder="e.g. Game of Thrones, Harry Potter,"
-            ></textarea>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Do you have a preferred name origin?
-            </label>
-            <div className="relative">
-              <select
-                value={nameOrigin}
-                onChange={(e) => setNameOrigin(e.target.value)}
-                className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              >
-                <option>No preference</option>
-                <option>English</option>
-                <option>Latin</option>
-                <option>Greek</option>
-                <option>Japanese</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <ChevronDown size={20} />
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition duration-300"
-          >
-            GENERATE NAMES
-          </button>
+            <button type="submit" id="searchButton" disabled>搜索图片</button>
         </form>
-
-        {generatedNames.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">AI Generated Pet Names:</h2>
-            <ul className="space-y-4">
-              {generatedNames.map((name, index) => (
-                <li key={index}>
-                  <p className="text-xl font-semibold">{name.name}</p>
-                  <p className="text-gray-600">{name.explanation}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+        <div class="loader" id="loader"></div>
+        <div id="results"></div>
     </div>
-  );
-};
 
-export default AINamedMyPet;
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const searchButton = document.getElementById('searchButton');
+        const uploadForm = document.getElementById('uploadForm');
+        const loader = document.getElementById('loader');
+        const resultsDiv = document.getElementById('results');
+
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'inline-block';
+                    searchButton.disabled = false;
+                }
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.style.display = 'none';
+                searchButton.disabled = true;
+            }
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const imageFile = imageInput.files[0];
+            if (!imageFile) {
+                alert('请选择一个图片文件');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
+            searchButton.disabled = true;
+            loader.style.display = 'block';
+            resultsDiv.innerHTML = '';
+
+            try {
+                // 注意：这里需要替换为实际的API端点
+                const response = await axios.post('pdct.1.1.20240704T123441Z.87c8542a0b8eb442.991f730d0493d631f159ce2584acb78fec0d2ca4', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                const results = response.data;
+                displayResults(results);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('搜索过程中发生错误，请稍后再试。');
+            } finally {
+                searchButton.disabled = false;
+                loader.style.display = 'none';
+            }
+        });
+
+        function displayResults(results) {
+            resultsDiv.innerHTML = '';
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<p>没有找到匹配的图片。</p>';
+                return;
+            }
+
+            const ul = document.createElement('ul');
+            results.forEach(result => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = result.sourceUrl;
+                a.textContent = result.sourceUrl;
+                a.target = '_blank';
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+
+            resultsDiv.appendChild(ul);
+        }
+    </script>
+</body>
+</html>
