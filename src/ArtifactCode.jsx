@@ -167,10 +167,9 @@
             loader.style.display = 'block';
             resultsDiv.innerHTML = '';
 
-        
             try {
                 // 注意：这里需要替换为实际的API端点
-                const response = await axios.post('pdct.1.1.20240704T123441Z.87c8542a0b8eb442.991f730d0493d631f159ce2584acb78fec0d2ca4', formData, {
+                const response = await axios.post('https://your-backend-api.com/search', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
